@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -14,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
@@ -30,14 +32,15 @@ import kotlinx.coroutines.flow.Flow
 fun MainScreen(
     galleryItems: Flow<PagingData<CatInfo>>
 ) {
-    val catInfos = galleryItems.collectAsLazyPagingItems()
-    val itemCount = catInfos.itemCount
-    val loadState = catInfos.loadState
+    val catInfo = galleryItems.collectAsLazyPagingItems()
+    val itemCount = catInfo.itemCount
+    val loadState = catInfo.loadState
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.padding(16.dp)
     ) {
         if (itemCount == 0 && loadState.append is LoadState.NotLoading && loadState.append.endOfPaginationReached) {
-            Text("No Cats Found!")
+            Text(stringResource(id = R.string.no_data_found))
         } else {
             LazyColumn(
                 modifier = Modifier.fillMaxWidth(),
@@ -46,8 +49,8 @@ fun MainScreen(
                 state = rememberLazyListState(),
                 content = {
                     items(count = itemCount) { index ->
-                        val catInfo = catInfos[index]
-                        catInfo?.let {
+                        val catsInfo = catInfo[index]
+                        catsInfo?.let {
                             GalleryItem(item = it)
                         }
                     }
@@ -66,15 +69,15 @@ fun GalleryItem(
 ) {
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         AsyncImage(
             modifier = Modifier
-                .width(152.dp)
+                .size(152.dp)
                 .clip(RoundedCornerShape(16.dp)),
             model = item.url,
+            contentScale = ContentScale.Crop,
             contentDescription = stringResource(R.string.cat_image)
         )
         Column(
