@@ -85,7 +85,6 @@ fun GalleryItem(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(text = stringResource(R.string.id, item.id.orDefault()))
-            Text(text = stringResource(R.string.type, item.getBreed()))
         }
     }
 }
